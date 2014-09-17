@@ -141,6 +141,6 @@
 ;; 2.38:
 
 (define (reverse sequence)
-  (fold-right (lambda (x y) <??>) null sequence))
+  (foldr (lambda (x y) (append y (list x))) null sequence))
 (define (reverse sequence)
-  (fold-left (lambda (x y) <??>) null sequence))
+  (foldl (lambda (x y) (cons x y)) null sequence))
