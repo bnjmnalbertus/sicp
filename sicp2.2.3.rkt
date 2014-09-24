@@ -248,9 +248,46 @@
           (queen-cols (- k 1))))))
   (queen-cols board-size))
 
-In this procedure rest-of-queens is a way to place k - 1 queens in the first k - 1 columns, and new-row is a proposed row in which to place the queen for the kth column. Complete the program by implementing the representation for sets of board positions, including the procedure adjoin-position, which adjoins a new row-column position to a set of positions, and empty-board, which represents an empty set of positions. You must also write the procedure safe?, which determines for a set of positions, whether the queen in the kth column is safe with respect to the others. (Note that we need only check whether the new queen is safe -- the other queens are already guaranteed safe with respect to each other.)
+;; In this procedure rest-of-queens is a way to place k - 1 queens in
+;; the first k - 1 columns, and new-row is a proposed row in which to
+;; place the queen for the kth column. Complete the program by
+;; implementing the representation for sets of board positions,
+;; including the procedure adjoin-position, which adjoins a new
+;; row-column position to a set of positions, and empty-board, which
+;; represents an empty set of positions. You must also write the
+;; procedure safe?, which determines for a set of positions, whether
+;; the queen in the kth column is safe with respect to the
+;; others. (Note that we need only check whether the new queen is safe
+;; -- the other queens are already guaranteed safe with respect to
+;; each other.)
 
-Exercise 2.43.  Louis Reasoner is having a terrible time doing exercise 2.42. His queens procedure seems to work, but it runs extremely slowly. (Louis never does manage to wait long enough for it to solve even the 6× 6 case.) When Louis asks Eva Lu Ator for help, she points out that he has interchanged the order of the nested mappings in the flatmap, writing it as
+(define empty-board '())
+
+(define (adjoin-position row column board)
+  (if (not (null? (filter (lambda (x)
+                            (and (= (car x) row)
+                                 (= (cadr x) column)))
+                          board)))
+      board
+      (cons (list row column) board)))
+
+(define (safe? k board)
+  (if (null? (filter (lambda (x)
+                       (or (= (caar board) (car x))
+                           (= (cadar board) (cadr x))
+                           (= (abs (- (caar board) (car x)))
+                              (abs (- (cadar board) (cadr x))))))
+                     (cdr board)))
+      #t
+      #f))
+
+
+;; Exercise 2.43.  Louis Reasoner is having a terrible time doing
+;; exercise 2.42. His queens procedure seems to work, but it runs
+;; extremely slowly. (Louis never does manage to wait long enough for
+;; it to solve even the 6× 6 case.) When Louis asks Eva Lu Ator for
+;; help, she points out that he has interchanged the order of the
+;; nested mappings in the flatmap, writing it as
 
 (flatmap
  (lambda (new-row)
@@ -259,4 +296,15 @@ Exercise 2.43.  Louis Reasoner is having a terrible time doing exercise 2.42. Hi
         (queen-cols (- k 1))))
  (enumerate-interval 1 board-size))
 
-Explain why this interchange makes the program run slowly. Estimate how long it will take Louis's program to solve the eight-queens puzzle, assuming that the program in exercise 2.42 solves the puzzle in time T. 
+;; Explain why this interchange makes the program run slowly. Estimate
+;; how long it will take Louis's program to solve the eight-queens
+;; puzzle, assuming that the program in exercise 2.42 solves the
+;; puzzle in time T.
+
+;; Answer: (queen-cols (- k 1)) computes the solution for k - 1
+;; queens. In the original, queen-cols is called once for each value
+;; of k, meaning it is called board-size times. In Mr. Reasoner's
+;; variation, queen-cols is called board-size times for each value of
+;; k, meaning it is called board-size^2 times. So, if the original
+;; solves the puzzle in time T, then the variation solves it in time
+;; T^2.
